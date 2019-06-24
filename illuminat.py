@@ -3,6 +3,7 @@
 from flask import Flask
 from flask import abort
 from flask import jsonify
+from flask import request
 
 from rpi_ws281x import *
 
@@ -19,11 +20,12 @@ LED_FREQ_HZ = 800000
 LED_DMA = 10
 LED_BRIGHTNESS = 255
 LED_INVERT = False
-PERIOD = 1. / 15
+PERIOD = 1. / 1
 strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
 
 # 0th element: lights out
-patterns = [[list(repeat(Color(0, 0, 0), LED_COUNT))]]
+patterns = [[list(repeat(Color(255, 0, 0), LED_COUNT)), list(repeat(Color(0, 255, 0), LED_COUNT))]]
+print(patterns)
 playing_id = 0
 changed_id = False
 
@@ -33,14 +35,12 @@ def led_thread():
     global playing_id
     global changed_id
     while True:
-        current_time = target_time = time.monotonic()
-        pattern = patterns[playing_id]
-        for frame in pattern:
+        target_time = time.monotonic()
+        for frame in patterns[playing_id]:
             # assert(len(frame) == LED_COUNT)
-            previous_time, current_time = current_time, time.monotonic()
-            time_delta = current_time - previous_time
             if changed_id:
                 changed_id = False
+                print("Changed ID: " + str(playing_id))
                 break
             for lednum, led in enumerate(frame):
                 strip.setPixelColor(lednum, led)
@@ -53,14 +53,19 @@ def led_thread():
 @app.route("/register_pattern", methods=['POST'])
 def register_pattern():
     req = request.json
+    pattern = req.get("pattern")
+    print(pattern)
     id_ = len(patterns)
-    patterns.append(req.pattern)
+    patterns.append(pattern)
+    print(pattern)
     return jsonify(id=id_)
 
 @app.route("/play_pattern", methods=['POST'])
 def play_pattern():
+    global playing_id
+    global changed_id
     req = request.json
-    id_ = req.id
+    id_ = req.get("id")
     if len(patterns) <= id_:
         abort(404, "Not found")
     playing_id = id_
@@ -87,5 +92,5 @@ if __name__ == '__main__':
     thread.start()
 
     # dangerous
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')
 
