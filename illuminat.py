@@ -28,6 +28,10 @@ playing_id = 0
 changed_id = False
 
 def led_thread():
+    global strip
+    global patterns
+    global playing_id
+    global changed_id
     while True:
         current_time = target_time = time.monotonic()
         pattern = patterns[playing_id]
