@@ -24,7 +24,7 @@ PERIOD = 1. / 1
 strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS)
 
 # 0th element: lights out
-patterns = [[list(repeat(Color(255, 0, 0), LED_COUNT)), list(repeat(Color(0, 255, 0), LED_COUNT))]]
+patterns = [[list(repeat(Color(8, 8, 8), LED_COUNT))]]
 print(patterns)
 playing_id = 0
 changed_id = False
