@@ -8,6 +8,8 @@ from rpi_ws281x import *
 
 from itertools import repeat
 
+import threading
+
 app = Flask(__name__)
 
 LED_COUNT = 8 * 8
