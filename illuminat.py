@@ -30,7 +30,8 @@ changed_id = False
 def led_thread():
     while True:
         current_time = target_time = time.monotonic()
-        for frame in patterns[playing_id]:
+        pattern = patterns[playing_id]
+        for frame in pattern:
             # assert(len(frame) == LED_COUNT)
             previous_time, current_time = current_time. time.monotonic()
             time_delta = current_time - previous_time
