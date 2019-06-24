@@ -9,6 +9,7 @@ from rpi_ws281x import *
 from itertools import repeat
 
 import threading
+import time
 
 app = Flask(__name__)
 
@@ -28,12 +29,20 @@ changed_id = False
 
 def led_thread():
     while True:
-       for frame in range(len(patterns[playing_id])):
-           if changed_id:
-               changed_id = False
-               break
-           for led in range(len(patterns[playing_id][frame])): # LED_COUNT
-               strip.setPixelColor(led, patterns[playing_id][frame][led])
+        current_time = target_time = time.monotonic()
+        for frame in range(len(patterns[playing_id])):
+            previous_time, current_time = current_time. time.monotonic()
+            time_delta = current_time - previous_time
+            if changed_id:
+                changed_id = False
+                break
+            for led in range(len(patterns[playing_id][frame])): # LED_COUNT
+                strip.setPixelColor(led, patterns[playing_id][frame][led])
+            strip.show()
+            target_time += PERIOD
+            sleep_time = target_time - time.monotonic()
+            if 0 < sleep_time:
+                time.sleep(sleep_time)
 
 @app.route("/register_pattern", methods=['POST'])
 def register_pattern():
