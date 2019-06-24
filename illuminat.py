@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from flask import Flask
 from flask import abort
 from flask import jsonify
@@ -57,7 +59,7 @@ def get_playing_pattern():
 def error_handler(error):
     if error.code == 404:
         return "Not Found", error.code
-    elif error.code = 501:
+    elif error.code == 501:
         return "Not Implemented", error.code
     else:
         return "Error", error.code
